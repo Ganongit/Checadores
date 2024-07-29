@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo de Imagen en la Cabecera</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <script type="text/javascript">
+        var securityCodes = {};
+        var tripStarted = {
+            'Diablero 0': false,
+            'Diablero 1': false,
+            'Diablero 2': false
+        };
+
+        function getTimeStamp() {
+            var now = new Date();
+            return ((now.getMonth() + 1) + '/' + (now.getDate()) + '/' + now.getFullYear() + " " + now.getHours() + ':'
+                + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+                    .getSeconds()) : (now.getSeconds())));
+        }
+
+
+        function setTime() {
+            document.getElementById('field').value = getTimeStamp();
+        }
+
+        function generateSecurityCode() {
+            return Math.floor(Math.random() * 90) + 10;
+        }
+        
+        
+        function confirmStart(buttonValue) {
+            if (confirm("¿Estás seguro de que quieres iniciar el viaje para " + buttonValue + "?")) {
+                addItem(buttonValue);
+            }
+        }
+
+        function addItem(buttonValue) {
+            if (tripStarted[buttonValue]) {
+                alert(buttonValue + " ya tiene un viaje en curso. Debe finalizarlo antes de iniciar uno nuevo.");
+                return;
+            }
+
+            var timestamp = getTimeStamp();
+            var location = document.getElementById('location').value;
+
+            //Modificado
+            var iconButton = `<a class="px-2 text-success" href="#"><i class="bi bi-check-circle-fill"></i></a>`
+            var iconButton1 = `<a class="px-2 text-danger" href="#"><i class="bi bi-x-octagon-fill"></i>`
+            var newItemText = `<span class="log-user">${buttonValue}  -  ${location}  - ${timestamp}</span>` + iconButton+iconButton1;
+            //Modificado
+
+            var li = document.createElement('li');
+
+            //Modificado
+            li.innerHTML = newItemText;
+            //Modificado
+
+            li.className = 'list-group-item';
+            document.getElementById('myList').appendChild(li);
+
+            if (buttonValue !== 'Diablero') {
+                var securityCode = generateSecurityCode();
+                securityCodes[buttonValue] = securityCode;
+                alert("Código de seguridad para " + buttonValue + ": " + securityCode);
+            }
+
+            tripStarted[buttonValue] = true; // Marca que un viaje ha sido iniciado para el diablero correspondiente
+        }
+
+        function addItem1(buttonValue) {
+            var timestamp = getTimeStamp();
+            var location = document.getElementById('location').value;
+            var startButton = prompt("Ingrese el botón de inicio correspondiente (Diablero 0, Diablero 1, Diablero 2):");
+
+            if (startButton !== 'Diablero 0' && startButton !== 'Diablero 1' && startButton !== 'Diablero 2') {
+                alert("Botón de inicio inválido.");
+                return;
+            }
+
+            if (startButton !== 'Diablero') {
+                var enteredCode = prompt("Ingrese el código de seguridad para " + startButton + ":");
+                if (enteredCode != securityCodes[startButton]) {
+                    alert("Código de seguridad incorrecto.");
+                    return;
+                }
+            }
+
+            var newItemText = buttonValue +" - "+ location+" - " + timestamp + " - " + startButton;
+            var li = document.createElement('li');
+            li.textContent = newItemText;
+            li.className = 'list-group-item';
+            document.getElementById('myList1').appendChild(li);
+
+            tripStarted[startButton] = false; // Marca que el viaje ha sido finalizado para el diablero correspondiente
+        }
+</script>
+   <style>
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            font-size: 7px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px;
+            background-color: #335C9B;
+        }
+
+        .header img {
+            height: 15px;
+        }
+
+        .header h1 {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+        }
+    </style>
+</head>
+<body onload="setTime()">
+    <header class="bg-primary text-white text-left  py-3">
+        <img src="logo-ganon.png" alt="Descripción de la Imagen" class="img-fluid mb-2">
+        <h1>Checador Diableros</h1>
+    </header>
+
+    <main class="container mt-4">
+        <div class="form-group">
+           
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success mx-2" onclick="confirmStart('Diablero 0')">Diablero 0</button>
+                <button class="btn btn-success mx-2" onclick="confirmStart('Diablero 1')">Diablero 1</button>
+                <button class="btn btn-success mx-2" onclick="confirmStart('Diablero 2')">Diablero 2</button>
+              <label for="location">Ubicación:</label>
+            <select id="location" class="form-control">
+                <option value="Pino Suárez">Pino Suárez</option>
+                <option value="Frai">Frai</option>
+             </select>
+
+            <br><br>
+            </div>
+          
+               
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Viajes</h3>
+                <ul id="myList" class="list-group">
+
+                    <li class="list-group-item">En curso</li>
+                </ul>
+                <h3>Fin</h3>
+                  <ul id="myList1" class="list-group">
+                    <li class="list-group-item">Fin</li>
+                  </ul>
+                <button class="btn btn-danger mt-2" onclick="addItem1('Final')">Final</button>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
